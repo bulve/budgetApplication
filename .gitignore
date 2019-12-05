@@ -1,0 +1,22 @@
+
+#common tools files
+target
+
+# Logs
+logs
+*.log
+
+# Dependency directory
+node_modules
+
+# Generated code
+dist
+build
+build-ts
+generated
+
+# VSCode folders
+.vscode
+*.hprof
+*.xlsx#
+.npmrc

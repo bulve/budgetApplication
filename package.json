@@ -1,0 +1,10 @@
+{
+  "name": "budget",
+  "private": true,
+  "devDependencies": {
+    "lerna": "3.16.4"
+  },
+  "scripts": {},
+  "dependencies": {
+  }
+}
