@@ -2,7 +2,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { IUserPayload, ServiceResponseFactory, IServiceResponse } from "../utils";
-import { IAccount, IAccountService, IAction } from "./interface";
+import {IAccount, IAccountService, IAccountSuccess, IAction} from "./interface";
 import { AccountEntity, ActionEntity } from "./entity";
 import { ActionType } from "./enum";
 import {IAccountCreateRequest} from "./interface/IAccountCreateRequest";
@@ -18,14 +18,13 @@ export class AccountService implements IAccountService {
         private readonly actionRepository: Repository<ActionEntity>
         ){}
 
-    async createAccount(userPayload: IUserPayload, accountRequest: IAccountCreateRequest): Promise<IServiceResponse<string>> {
+    public async createAccount(userPayload: IUserPayload, accountRequest: IAccountCreateRequest): Promise<IServiceResponse<IAccountSuccess>> {
         const account = this.accountRepository.create(accountRequest);
         account.userId = userPayload.userId;
         account.timestamp = account.timestamp ? account.timestamp : new Date();
         return this.accountRepository.save(account)
-            .then(createdAccount => ServiceResponseFactory.success(createdAccount.id))
+            .then(createdAccount => ServiceResponseFactory.success({id: createdAccount.id}))
             .catch(error =>  ServiceResponseFactory.failure(`Failed to create Account with error: '${error}'`))
-        // message: `Account with name '${createdAccount.name}' was created successfully`
     }
 
     public async getAccount(userPayload: IUserPayload): Promise<IServiceResponse<IAccount[]>> {
@@ -43,29 +42,31 @@ export class AccountService implements IAccountService {
             .catch(error => ServiceResponseFactory.failure(`Failed to update Account by id '${accountId}' for user '${userPayload.userId}' with error: '${error}'`));
     }
 
-    public async performAction(userPayload: IUserPayload, action: IAction, budgetId: string): Promise<IServiceResponse<string>>{
+    public async performAction(userPayload: IUserPayload, action: IAction, accountId: string): Promise<IServiceResponse<IAccountSuccess>>{
         let newAction = this.actionRepository.create(action);
-        newAction.accountId = budgetId;
+        newAction.accountId = accountId;
         newAction.timeStamp = new Date();
         
-        return this.accountRepository.findOne(budgetId)
+        return this.accountRepository.findOne(accountId)
             .then(budget => {
                 if(budget.userId == userPayload.userId) {
                     return budget;
                 } else {
-                    throw Error(`User does not have Budget by id '${budgetId}' and cannot perform actions`);
+                    throw Error(`User does not have Budget by id '${accountId}' and cannot perform actions`);
                 }
             })
             .then(account => {
                 if(this.canPerformAction(newAction, account)) {
-                    return this.performeAction(newAction, account);
+                    return this.performActionByType(newAction, account);
                 } else {
                     throw Error(`Action '${newAction.type}' cannot be perfomed to Budget '${account.name}'`);
                 }
             })
+            //TODO transactional creation is missing
             .then(budget => this.saveAccount(budget))
             .then(budget => this.saveAction(newAction))
-            .then(savedAction => ServiceResponseFactory.success(`Action '${savedAction.type}' for '${savedAction.amount}' was performed on Budget by id '${budgetId}'`))
+            //TODO maybe instead of account id we need action id?
+            .then(savedAction => ServiceResponseFactory.success({id: accountId}))
             .catch(error => ServiceResponseFactory.failure(error.message))
     }
 
@@ -105,7 +106,7 @@ export class AccountService implements IAccountService {
         return false;
     }
 
-    private performeAction(action: IAction, account: IAccount): IAccount {
+    private performActionByType(action: IAction, account: IAccount): IAccount {
         if (action.type === ActionType.WITHDRAW) {
             account.balance = account.balance - action.amount;
             return account;
