@@ -5,8 +5,9 @@ import { AuthModule } from './auth';
 import { ConfigModule } from './config';
 import { AccountModule } from "./account";
 import { HealthModule } from "./health";
+import { CategoryModule } from "./category";
 
 @Module({
-  imports: [ConnectionModule, ConfigModule, AccountModule, UserModule, AuthModule, HealthModule],
+  imports: [ConnectionModule, ConfigModule, AccountModule, CategoryModule, UserModule, AuthModule, HealthModule],
 })
 export class ApplicationModule {}

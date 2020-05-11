@@ -3,7 +3,9 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserEntity } from "../user";
 import { ConfigService } from "../config";
 import { ConnectionOptions } from "typeorm";
-import { AccountEntity, ActionEntity } from "../account";
+import { AccountEntity } from "../account";
+import {ActionEntity} from "../action";
+import {CategoryEntity} from "../category";
 
 @Module({
     imports: [
@@ -15,7 +17,7 @@ import { AccountEntity, ActionEntity } from "../account";
                 username: configService.get("DATABASE_USERNAME"),
                 password: configService.get("DATABASE_PASSWORD"),
                 database: configService.get("DATABASE_NAME"),
-                entities: [AccountEntity, ActionEntity, UserEntity],
+                entities: [AccountEntity, ActionEntity, UserEntity, CategoryEntity],
                 synchronize: true
             } as ConnectionOptions),
             inject: [ConfigService],

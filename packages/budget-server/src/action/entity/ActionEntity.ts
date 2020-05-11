@@ -1,7 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from "typeorm";
 import { IAction } from "../interface";
 import { ActionType } from "../enum";
-import { AccountEntity } from "./AccountEntity";
+import { AccountEntity } from "../../account";
+import { CategoryEntity } from "../../category";
 
 @Entity("Action")
 export class ActionEntity implements IAction {
@@ -12,6 +13,10 @@ export class ActionEntity implements IAction {
     @OneToOne(type => AccountEntity)
     @Column()
     accountId: string;
+
+    @OneToOne(type => CategoryEntity)
+    @Column()
+    categoryId: string;
 
     @Column("enum", { enum: ActionType })
     type: ActionType;

@@ -1,14 +1,16 @@
 import { IUserPayload, IServiceResponse } from "../../utils";
 import { IAccountRequest } from "./IAccountRequest";
-import { IAction } from "./IAction";
 import { IAccount } from "./IAccount";
 import { IAccountSuccess } from "./IAccountSuccess";
+import { IAction } from "../../action";
 
 export interface IAccountService {
 
     createAccount(userPayload: IUserPayload, accountRequest: IAccountRequest): Promise<IServiceResponse<IAccountSuccess>>;
 
-    getAccount(userPayload: IUserPayload): Promise<IServiceResponse<IAccount[]>> ;
+    getAccount(userPayload: IUserPayload, accountId: string): Promise<IServiceResponse<IAccount>> ;
+
+    getAccounts(userPayload: IUserPayload): Promise<IServiceResponse<IAccount[]>> ;
 
     getActions(userPayload: IUserPayload, accountId: string): Promise<IServiceResponse<IAction[]>> ;
 

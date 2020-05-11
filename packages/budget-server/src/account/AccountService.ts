@@ -2,11 +2,10 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { IUserPayload, ServiceResponseFactory, IServiceResponse } from "../utils";
-import {IAccount, IAccountService, IAccountSuccess, IAction} from "./interface";
-import { AccountEntity, ActionEntity } from "./entity";
-import { ActionType } from "./enum";
-import {IAccountCreateRequest} from "./interface/IAccountCreateRequest";
-import {IAccountUpdateRequest} from "./interface/IAccountUpdateRequest";
+import {IAccount, IAccountService, IAccountSuccess, IAccountUpdateRequest, IAccountCreateRequest} from "./interface";
+import { AccountEntity } from "./entity";
+import { ActionType } from "../action/enum";
+import { IAction, ActionEntity } from "../action";
 
 @Injectable()
 export class AccountService implements IAccountService {
@@ -27,8 +26,19 @@ export class AccountService implements IAccountService {
             .catch(error =>  ServiceResponseFactory.failure(`Failed to create Account with error: '${error}'`))
     }
 
-    public async getAccount(userPayload: IUserPayload): Promise<IServiceResponse<IAccount[]>> {
-        return this.getBudgetsByUserId(userPayload.userId)
+    public async getAccount(userPayload: IUserPayload, accountId: string): Promise<IServiceResponse<IAccount>> {
+        return this.accountRepository.findOne({id:accountId, userId: userPayload.userId})
+            .then(budget => {
+                if(budget){
+                    return ServiceResponseFactory.success(budget)
+                }
+                throw Error(`Account by id: ${accountId} for user: ${userPayload.userId} does not exist.`)
+            })
+            .catch(error => ServiceResponseFactory.failure(error.message))
+    }
+
+    public async getAccounts(userPayload: IUserPayload): Promise<IServiceResponse<IAccount[]>> {
+        return this.getAccountsByUserId(userPayload.userId)
             .then(budgets => ServiceResponseFactory.success(budgets))
             .catch(error => ServiceResponseFactory.failure(error.message))
     }
@@ -47,19 +57,18 @@ export class AccountService implements IAccountService {
         newAction.accountId = accountId;
         newAction.timeStamp = new Date();
         
-        return this.accountRepository.findOne(accountId)
-            .then(budget => {
-                if(budget.userId == userPayload.userId) {
-                    return budget;
-                } else {
-                    throw Error(`User does not have Budget by id '${accountId}' and cannot perform actions`);
+        return this.accountRepository.findOne({id: accountId, userId: userPayload.userId})
+            .then(account => {
+                if(account) {
+                    return account;
                 }
+                throw Error(`User does not have Account by id '${accountId}' and cannot perform actions`);
             })
             .then(account => {
                 if(this.canPerformAction(newAction, account)) {
                     return this.performActionByType(newAction, account);
                 } else {
-                    throw Error(`Action '${newAction.type}' cannot be perfomed to Budget '${account.name}'`);
+                    throw Error(`Action '${newAction.type}' cannot be performed to Account '${account.name}'`);
                 }
             })
             //TODO transactional creation is missing
@@ -85,7 +94,7 @@ export class AccountService implements IAccountService {
 
     }
 
-    private async getBudgetsByUserId(userId: string): Promise<IAccount[]> {
+    private async getAccountsByUserId(userId: string): Promise<IAccount[] | undefined> {
         return this.accountRepository.find({userId});
     }
 
