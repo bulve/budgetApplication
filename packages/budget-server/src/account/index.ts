@@ -1,6 +1,6 @@
 export * from "./AccountController"
 export * from "./AccountModule"
 export * from "./AccountService"
+export * from "./AccountRepository"
 export * from "./interface"
 export * from "./entity"
-export * from "../action/enum"

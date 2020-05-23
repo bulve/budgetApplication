@@ -4,6 +4,6 @@ export interface IActionPerform {
     accountId: string;
     categoryId: string;
     type: ActionType;
-    description: string;
+    description?: string;
     amount: number;
 }

@@ -2,12 +2,13 @@ import {HttpStatus} from "@nestjs/common";
 
 export interface IServiceResponse<T> {
     getStatus() : HttpStatus;
-    getResponse() : IResponse<T>;
+    getResponse() : IResponseBody<T>;
 }
 
-export interface IResponse<T> {
+export interface IResponseBody<T> {
     data?: T
     errors?: IResponseError[]
+    success?: boolean
 }
 
 export interface IResponseError {

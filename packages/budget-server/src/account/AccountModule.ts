@@ -1,17 +1,17 @@
 import { Module, NestModule, MiddlewareConsumer } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { AccountEntity } from "./entity";
 import { AccountController } from "./AccountController";
 import { AccountService } from "./AccountService";
-import { AccountEntity } from "./entity";
-import { ActionEntity } from "../action";
+import {AccountRepository} from "./AccountRepository";
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([AccountEntity, ActionEntity])
+        TypeOrmModule.forFeature([AccountEntity])
     ],
     controllers: [AccountController],
-    providers: [AccountService],
-    exports: [AccountService]
+    providers: [AccountService, AccountRepository],
+    exports: [AccountService, AccountRepository]
   })
 export class AccountModule implements NestModule {
     configure(customer: MiddlewareConsumer){}

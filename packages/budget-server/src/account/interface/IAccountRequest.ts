@@ -1,6 +1,6 @@
 
 export interface IAccountRequest {
     name: string;
-    balance: number;
-    openDate: Date;
+    balance?: number;
+    timestamp?: Date;
 }
