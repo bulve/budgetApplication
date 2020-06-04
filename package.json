@@ -5,6 +5,5 @@
     "lerna": "3.16.4"
   },
   "scripts": {},
-  "dependencies": {
-  }
+  "dependencies": {}
 }

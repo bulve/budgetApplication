@@ -1,8 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { HttpStatus } from "@nestjs/common";
 import {MockType} from "../testUtils";
-import { AccountService, IAccount} from "../../src/account";
-import {AccountRepository} from "../../src/account/AccountRepository";
+import { AccountService, IAccount, AccountRepository} from "../../src/account";
 
 describe("AccountService", () => {
 

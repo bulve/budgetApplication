@@ -1,9 +1,7 @@
 module.exports = {
-    moduleFileExtensions: ["ts", "js"],
-    transform: {
-        "^.+\\.ts$": "ts-jest"
-    },
-    testMatch: ["**/?(*.)test.ts"],
+    preset: "ts-jest",
+    testRegex: "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    moduleFileExtensions: ["js", "ts", "tsx"],
     verbose: true,
     cacheDirectory: "./target/tmp/",
     coverageDirectory: "./target/coverage",
@@ -31,4 +29,4 @@ module.exports = {
     // ],
     testEnvironment: "node",
     // setupFilesAfterEnv: ["./__tests__/Asserts.js", "./__tests__/loggerConfig.js"]
-}
+};
