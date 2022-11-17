@@ -47,7 +47,7 @@
     "ts-node": "^6.0.0",
     "tslint": "~5.20.1",
     "webpack": "~4.42.1",
-    "webpack-cli": "~3.3.11",
+    "webpack-cli": "~3.3.12",
     "webpack-node-externals": "^1.7.2",
     "typescript": "~3.8.3"
   }
